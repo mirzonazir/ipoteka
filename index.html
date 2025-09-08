@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ипотечный Калькулятор</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Ипотечный калькулятор</h1>
+    
+    <!-- Форма ввода -->
+    <form id="calculatorForm">
+        <label for="loanAmount">Стоимость недвижимости:</label><br>
+        <input type="number" id="loanAmount" placeholder="Сумма займа"><br>
+        
+        <label for="downPayment">Первоначальный взнос (%):</label><br>
+        <input type="number" id="downPayment" placeholder="Процент от стоимости"><br>
+        
+        <label for="interestRate">Годовая процентная ставка (%):</label><br>
+        <input type="number" id="interestRate" placeholder="Ставка процентов годовых"><br>
+        
+        <label for="loanTerm">Срок кредита (лет):</label><br>
+        <input type="number" id="loanTerm" placeholder="Количество лет"><br>
+        
+        <button type="submit">Рассчитать</button>
+    </form>
+    
+    <!-- Блок вывода результата -->
+    <div id="result"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
+
+<style>
+  /* Базовые стили */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    text-align: center;
+}
+
+.container {
+    max-width: 100vw;
+    width: 80%;
+    height: 80vh;
+    margin: auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+form input[type=number], form button {
+    width: 100%;
+    padding: 10px 40px;
+    margin-top: 10px;
+    font-size: 18px;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.3s ease-in-out;
+}
+
+form button {
+    cursor: pointer;
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+#result {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+</style>
+
+<script>
+  document.getElementById('calculatorForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Предотвращаем отправку формы
+
+    const loanAmount = parseFloat(document.getElementById('loanAmount').value); // Стоимость недвижимости
+    const downPaymentPercent = parseFloat(document.getElementById('downPayment').value); // Первоначальный взнос в процентах
+    const interestRate = parseFloat(document.getElementById('interestRate').value); // Процентная ставка
+    const loanTermYears = parseInt(document.getElementById('loanTerm').value); // Срок кредита в годах
+
+    if (!loanAmount || !interestRate || !loanTermYears) {
+        alert("Заполните обязательные поля!");
+        return;
+    }
+
+    // Проверяем наличие начального взноса и рассчитываем кредит соответственно
+    let principalLoanAmount = loanAmount;
+    if (downPaymentPercent > 0) { // Учитываем первичный взнос только если он указан
+        const downPayment = (loanAmount * downPaymentPercent) / 100;
+        principalLoanAmount -= downPayment;
+    }
+
+    // Преобразуем годовую ставку в месячную и общее число месяцев
+    const monthlyInterestRate = interestRate / 100 / 12;
+    const numberOfPayments = loanTermYears * 12;
+
+    // Формула аннуитетного платежа
+    let monthlyPayment = principalLoanAmount *
+                         (monthlyInterestRate * Math.pow((1 + monthlyInterestRate), numberOfPayments)) /
+                         (Math.pow((1 + monthlyInterestRate), numberOfPayments) - 1);
+
+    document.getElementById('result').innerHTML =
+        `<p>Ежемесячный платеж: ${monthlyPayment.toFixed(2)} руб.</p>` +
+        `<p>Общая сумма выплат: ${(monthlyPayment * numberOfPayments).toFixed(2)} руб.</p>`;
+});
+</script>
